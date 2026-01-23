@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { OPRData } from '../types';
+import { OPRData } from '../types.ts';
 import { Camera, User, Briefcase, Calendar, Clock, Target, FileText, LayoutGrid } from 'lucide-react';
 
 interface FormSectionProps {

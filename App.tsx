@@ -1,14 +1,30 @@
 
-import React, { useState, useRef, useCallback } from 'react';
-import { OPRData, INITIAL_DATA } from './types';
-import { FormSection } from './components/FormSection';
-import { ReportPreview } from './components/ReportPreview';
-import { FileDown, FileText, CheckCircle2, Layout, BookOpen } from 'lucide-react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { OPRData, INITIAL_DATA } from './types.ts';
+import { FormSection } from './components/FormSection.tsx';
+import { ReportPreview } from './components/ReportPreview.tsx';
+import { FileDown, FileText, CheckCircle2, Layout, BookOpen, Save, Trash2 } from 'lucide-react';
+
+const DRAFT_KEY = 'e-opr-sk-krangan-draft';
 
 const App: React.FC = () => {
   const [data, setData] = useState<OPRData>(INITIAL_DATA);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const reportRef = useRef<HTMLDivElement>(null);
+
+  // Load draft on mount
+  useEffect(() => {
+    const savedDraft = localStorage.getItem(DRAFT_KEY);
+    if (savedDraft) {
+      try {
+        const parsedData = JSON.parse(savedDraft);
+        setData(parsedData);
+      } catch (e) {
+        console.error("Failed to parse saved draft", e);
+      }
+    }
+  }, []);
 
   const handleDataChange = (field: keyof OPRData, value: string) => {
     setData(prev => ({ ...prev, [field]: value }));
@@ -18,6 +34,26 @@ const App: React.FC = () => {
     const newImages = [...data.images];
     newImages[index] = base64;
     setData(prev => ({ ...prev, images: newImages }));
+  };
+
+  const saveDraft = () => {
+    setSaveStatus('saving');
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    } catch (e) {
+      console.error("Failed to save draft", e);
+      alert("Gagal menyimpan draf. Mungkin saiz gambar terlalu besar untuk simpanan pelayar.");
+      setSaveStatus('idle');
+    }
+  };
+
+  const clearDraft = () => {
+    if (window.confirm("Adakah anda pasti ingin memadam draf dan mengosongkan borang?")) {
+      localStorage.removeItem(DRAFT_KEY);
+      setData(INITIAL_DATA);
+    }
   };
 
   const generatePDF = useCallback(async () => {
@@ -83,9 +119,26 @@ const App: React.FC = () => {
           </div>
           <div className="flex items-center space-x-3">
              <button
+              onClick={saveDraft}
+              className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-bold transition-all text-sm
+                ${saveStatus === 'saved' 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-blue-800/50 hover:bg-blue-700 text-blue-100 border border-blue-700/50'}`}
+            >
+              {saveStatus === 'saving' ? (
+                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : saveStatus === 'saved' ? (
+                <CheckCircle2 size={18} />
+              ) : (
+                <Save size={18} />
+              )}
+              <span className="hidden sm:inline">{saveStatus === 'saved' ? 'Draf Disimpan' : 'Simpan Draf'}</span>
+            </button>
+
+             <button
               onClick={generatePDF}
               disabled={isGenerating}
-              className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-black transition-all shadow-lg text-sm
+              className={`flex items-center space-x-2 px-6 py-2.5 rounded-xl font-black transition-all shadow-lg text-sm
                 ${isGenerating 
                   ? 'bg-blue-400 cursor-not-allowed' 
                   : 'bg-yellow-400 hover:bg-yellow-300 text-blue-900 active:scale-95 hover:shadow-yellow-400/20'}`}
@@ -118,7 +171,13 @@ const App: React.FC = () => {
                 </div>
                 <h2 className="font-black text-slate-800 text-lg uppercase tracking-tight">BORANG PELAPORAN</h2>
               </div>
-              <span className="text-[10px] bg-blue-100 text-blue-700 font-black px-3 py-1 rounded-full border border-blue-200 uppercase tracking-tighter">E-OPR OFFICIAL</span>
+              <button 
+                onClick={clearDraft}
+                className="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-red-50"
+                title="Kosongkan Borang"
+              >
+                <Trash2 size={20} />
+              </button>
             </div>
             <div className="p-8">
               <FormSection 
@@ -145,8 +204,8 @@ const App: React.FC = () => {
                    <span>Gunakan 6 keping gambar aktiviti yang paling menarik & relevan.</span>
                 </li>
                 <li className="flex items-start space-x-3 text-indigo-100">
-                   <div className="mt-1 bg-indigo-700 rounded-full p-1"><CheckCircle2 size={12} /></div>
-                   <span>Satu mukasurat A4 sahaja akan dijana untuk kemasan rasmi.</span>
+                   <div className="mt-1 bg-indigo-700 rounded-full p-1"><Save size={12} /></div>
+                   <span>Data borang disimpan secara automatik dalam pelayar ini (Draf).</span>
                 </li>
               </ul>
             </div>

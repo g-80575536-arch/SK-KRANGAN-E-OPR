@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { OPRData } from '../types';
+import { OPRData } from '../types.ts';
 
 interface ReportPreviewProps {
   data: OPRData;
