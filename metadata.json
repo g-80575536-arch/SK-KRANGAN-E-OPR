@@ -1,0 +1,7 @@
+{
+  "name": "E-OPR SK KRANGAN",
+  "description": "Professional tool for generating official One Page Reports (E-OPR) for Sekolah Kebangsaan Krangan.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
