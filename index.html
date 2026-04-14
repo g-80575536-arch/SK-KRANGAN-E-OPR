@@ -1,69 +1,206 @@
-
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>E-OPR SK KRANGAN</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Projektor SK Krangan</title>
     <style>
-      body {
-        font-family: 'Inter', sans-serif;
-        background-color: #f1f5f9;
-        margin: 0;
-        padding: 0;
-      }
-      /* A4 Preview & PDF specific sizing */
-      .pdf-page {
-        width: 210mm;
-        height: 297mm;
-        padding: 15mm;
-        margin: 0 auto;
-        background: white;
-        box-shadow: 0 0 20px rgba(0,0,0,0.15);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        box-sizing: border-box;
-        position: relative;
-      }
-      @media print {
-        body { background: none; margin: 0; padding: 0; }
-        .no-print { display: none; }
-        .pdf-page { box-shadow: none; margin: 0; }
-      }
-      /* Custom utility for forced high quality */
-      .force-print-visible {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-      #root:empty::before {
-        content: "Memuatkan Sistem E-OPR SK KRANGAN...";
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        font-weight: bold;
-        color: #002147;
-      }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 20px; background-color: #f0f2f5; color: #333; }
+        .container { max-width: 850px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #1a73e8; margin-bottom: 5px; }
+        .info-box { background: #e8f0fe; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px; font-weight: bold; border: 1px solid #1a73e8; }
+        
+        .warning-text { 
+            background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 5px; 
+            border: 1px solid #ffeeba; font-size: 13px; margin-bottom: 20px; text-align: center;
+        }
+
+        label { display: block; margin-top: 15px; font-weight: 600; font-size: 14px; }
+        input { width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; font-size: 15px; }
+        
+        .flex-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .flex-item { flex: 1; min-width: 150px; }
+
+        button { width: 100%; background-color: #1a73e8; color: white; border: none; padding: 14px; border-radius: 6px; cursor: pointer; margin-top: 25px; font-size: 16px; font-weight: bold; transition: background 0.3s; }
+        button:hover { background-color: #1557b0; }
+        button:disabled { background-color: #ccc; }
+        
+        .table-container { overflow-x: auto; margin-top: 30px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 700px; }
+        th, td { border-bottom: 1px solid #eee; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; color: #555; }
+        tr:nth-child(even) { background-color: #fafafa; }
+        #loadingStatus { text-align: center; font-style: italic; color: #666; margin-top: 10px; }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@19.0.0",
-    "react-dom": "https://esm.sh/react-dom@19.0.0",
-    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-    "lucide-react": "https://esm.sh/lucide-react@0.460.0?bundle",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/"
-  }
-}
-</script>
 </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="index.tsx"></script>
-  </body>
+<body>
+
+<div class="container">
+    <div style="text-align: center;">
+        <img src="LOGO_SEKOLAH.png" alt="Logo Sekolah" style="width: 80px; height: auto; margin-bottom: 10px;">
+    </div>
+    
+    <h2>Borang Tempahan Projektor</h2>
+    <div class="info-box">UNIT ICT SK KRANGAN</div>
+
+    <div class="warning-text">
+        ⚠️ <strong>PERHATIAN:</strong> Sila semak jadual rekod di bawah sebelum membuat tempahan baharu.
+    </div>
+    
+    <label>Nama Guru:</label>
+    <input type="text" id="namaGuru" placeholder="Masukkan nama penuh">
+
+    <div class="flex-row">
+        <div class="flex-item">
+            <label>Tarikh:</label>
+            <input type="date" id="tarikh">
+        </div>
+        <div class="flex-item">
+            <label>Masa Guna:</label>
+            <input type="time" id="masaGuna">
+        </div>
+        <div class="flex-item">
+            <label>Masa Hantar:</label>
+            <input type="time" id="masaHantar">
+        </div>
+    </div>
+
+    <div class="flex-row">
+        <div class="flex-item">
+            <label>Lokasi:</label>
+            <input type="text" id="lokasi" placeholder="Cth: Kelas 4 Gemilang">
+        </div>
+        <div class="flex-item">
+            <label>Tujuan:</label>
+            <input type="text" id="tujuan" placeholder="Cth: PdPC Sains">
+        </div>
+    </div>
+    
+    <button id="btnHantar" onclick="tambahBooking()">Hantar Tempahan</button>
+
+    <hr style="margin-top: 40px; border: 0; border-top: 1px solid #eee;">
+
+    <h3>Rekod Tempahan Terkini</h3>
+    <div id="loadingStatus">Sedang mengambil rekod terkini...</div>
+    <div class="table-container">
+        <table id="jadualBooking">
+            <thead>
+                <tr>
+                    <th>Guru</th>
+                    <th>Tarikh</th>
+                    <th>Guna</th>
+                    <th>Hantar</th>
+                    <th>Lokasi</th>
+                    <th>Tujuan</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // URL API Google Apps Script anda
+    const urlAPI = "https://script.google.com/macros/s/AKfycbx1UztmMkvdZxB48wOGNI7hw4xzPYGNSmF-s9548-T7mV8H9k93Rm7BIS1rMYsGz2qLEQ/exec";
+
+    window.onload = paparRekod;
+
+    /**
+     * FUNGSI PENUKAR MASA: Menukar format 24 jam kepada 12 jam (AM/PM)
+     */
+    function formatKe12Jam(masa) {
+        if (!masa) return "-";
+        
+        // Menangani format jika ia adalah objek tarikh (ISO)
+        let masaStr = masa.toString();
+        
+        // Cuba dapatkan format HH:MM daripada string
+        let parts = masaStr.match(/(\d{1,2}):(\d{2})/);
+        if (parts) {
+            let jam = parseInt(parts[1]);
+            let minit = parts[2];
+            let ampm = jam >= 12 ? 'PM' : 'AM';
+            jam = jam % 12;
+            jam = jam ? jam : 12; // Jam '0' ditukar kepada '12'
+            return jam + ':' + minit + ' ' + ampm;
+        }
+        
+        return masaStr; // Pulangkan asal jika tidak padan format masa
+    }
+
+    /**
+     * FUNGSI PAPAR: Mengambil data dan memaparkannya dalam jadual
+     */
+    async function paparRekod() {
+        const tbody = document.querySelector("#jadualBooking tbody");
+        const status = document.getElementById('loadingStatus');
+
+        try {
+            const res = await fetch(urlAPI);
+            const data = await res.json();
+            tbody.innerHTML = "";
+            
+            if (!data || data.length === 0) {
+                status.innerText = "Tiada rekod tempahan dijumpai.";
+            } else {
+                status.style.display = "none";
+                // Susun terbaru di atas
+                data.reverse().forEach(item => {
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td><b>${item.nama}</b></td>
+                        <td>${item.tarikh}</td>
+                        <td>${formatKe12Jam(item.mGuna)}</td>
+                        <td>${formatKe12Jam(item.mHantar)}</td>
+                        <td>${item.lokasi}</td>
+                        <td>${item.tujuan}</td>
+                    `;
+                });
+            }
+        } catch (e) {
+            status.innerText = "Gagal memuatkan rekod. Sila muat semula halaman.";
+            console.error(e);
+        }
+    }
+
+    /**
+     * FUNGSI HANTAR: Menghantar data borang ke Sheets
+     */
+    async function tambahBooking() {
+        const btn = document.getElementById('btnHantar');
+        const payload = {
+            nama: document.getElementById('namaGuru').value,
+            tarikh: document.getElementById('tarikh').value,
+            mGuna: document.getElementById('masaGuna').value,
+            mHantar: document.getElementById('masaHantar').value,
+            lokasi: document.getElementById('lokasi').value,
+            tujuan: document.getElementById('tujuan').value
+        };
+
+        if (!payload.nama || !payload.tarikh || !payload.mGuna || !payload.mHantar) {
+            alert("Sila isi Nama, Tarikh dan Masa sebelum hantar!");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerText = "Sila tunggu...";
+
+        try {
+            await fetch(urlAPI, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(payload)
+            });
+
+            alert("Tempahan Berjaya Disimpan!");
+            location.reload(); 
+        } catch (e) {
+            alert("Ralat sambungan berlaku. Sila cuba lagi.");
+            btn.disabled = false;
+            btn.innerText = "Hantar Tempahan";
+        }
+    }
+</script>
+
+</body>
 </html>
