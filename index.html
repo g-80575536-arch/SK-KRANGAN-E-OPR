@@ -3,95 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking Projektor SK Krangan</title>
+    <title>Sistem Tempahan Projektor PJ01</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 20px; background-color: #f0f2f5; color: #333; }
-        .container { max-width: 850px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #1a73e8; margin-bottom: 5px; }
-        .info-box { background: #e8f0fe; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px; font-weight: bold; border: 1px solid #1a73e8; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f9; padding: 20px; color: #333; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: #1a73e8; text-align: center; margin-bottom: 5px; }
+        .unit-tag { background: #e8f0fe; color: #1a73e8; text-align: center; font-weight: bold; padding: 8px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #1a73e8; }
         
-        .warning-text { 
-            background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 5px; 
-            border: 1px solid #ffeeba; font-size: 13px; margin-bottom: 20px; text-align: center;
-        }
+        .alert { padding: 12px; border-radius: 8px; font-size: 14px; margin-top: 15px; display: none; font-weight: bold; text-align: center; }
+        .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
 
-        label { display: block; margin-top: 15px; font-weight: 600; font-size: 14px; }
-        input { width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; font-size: 15px; }
+        label { font-weight: bold; display: block; margin-top: 15px; }
+        input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
         
-        .flex-row { display: flex; gap: 10px; flex-wrap: wrap; }
-        .flex-item { flex: 1; min-width: 150px; }
-
-        button { width: 100%; background-color: #1a73e8; color: white; border: none; padding: 14px; border-radius: 6px; cursor: pointer; margin-top: 25px; font-size: 16px; font-weight: bold; transition: background 0.3s; }
-        button:hover { background-color: #1557b0; }
-        button:disabled { background-color: #ccc; }
+        button { width: 100%; background: #1a73e8; color: white; border: none; padding: 15px; border-radius: 8px; margin-top: 25px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
         
-        .table-container { overflow-x: auto; margin-top: 30px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 700px; }
+        .record-section { margin-top: 40px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
         th, td { border-bottom: 1px solid #eee; padding: 12px; text-align: left; }
-        th { background-color: #f8f9fa; color: #555; }
-        tr:nth-child(even) { background-color: #fafafa; }
-        #loadingStatus { text-align: center; font-style: italic; color: #666; margin-top: 10px; }
+        th { background: #f8f9fa; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div style="text-align: center;">
-        <img src="LOGO_SEKOLAH.png" alt="Logo Sekolah" style="width: 80px; height: auto; margin-bottom: 10px;">
-    </div>
-    
-    <h2>Borang Tempahan Projektor</h2>
-    <div class="info-box">UNIT ICT SK KRANGAN</div>
+    <h2>Tempahan Projektor Online</h2>
+    <div class="unit-tag">UNIT: PJ01 (SK KRANGAN)</div>
 
-    <div class="warning-text">
-        ⚠️ <strong>PERHATIAN:</strong> Sila semak jadual rekod di bawah sebelum membuat tempahan baharu.
-    </div>
-    
-    <label>Nama Guru:</label>
-    <input type="text" id="namaGuru" placeholder="Masukkan nama penuh">
+    <label>Nama Guru & Kelas:</label>
+    <input type="text" id="namaGuru" placeholder="Contoh: Cikgu Sarah (5 Bijak)">
 
-    <div class="flex-row">
-        <div class="flex-item">
-            <label>Tarikh:</label>
-            <input type="date" id="tarikh">
-        </div>
-        <div class="flex-item">
-            <label>Masa Guna:</label>
-            <input type="time" id="masaGuna">
-        </div>
-        <div class="flex-item">
-            <label>Masa Hantar:</label>
-            <input type="time" id="masaHantar">
-        </div>
-    </div>
+    <label>Tarikh Penggunaan:</label>
+    <input type="date" id="tarikh" onchange="semakPertindihan()">
 
-    <div class="flex-row">
-        <div class="flex-item">
-            <label>Lokasi:</label>
-            <input type="text" id="lokasi" placeholder="Cth: Kelas 4 Gemilang">
-        </div>
-        <div class="flex-item">
-            <label>Tujuan:</label>
-            <input type="text" id="tujuan" placeholder="Cth: PdPC Sains">
-        </div>
-    </div>
-    
-    <button id="btnHantar" onclick="tambahBooking()">Hantar Tempahan</button>
+    <label>Pilih Slot Masa:</label>
+    <select id="slotMasa" onchange="semakPertindihan()">
+        <option value="">-- Pilih Slot --</option>
+        <option value="Slot 1 (07:30-08:00)">Slot 1 (07:30-08:00)</option>
+        <option value="Slot 2 (08:00-08:30)">Slot 2 (08:00-08:30)</option>
+        <option value="Slot 3 (08:30-09:00)">Slot 3 (08:30-09:00)</option>
+        <option value="Slot 4 (09:00-09:30)">Slot 4 (09:00-09:30)</option>
+        <option value="Slot 5 (09:30-10:00)">Slot 5 (09:30-10:00)</option>
+        <option value="Slot 6 (10:30-11:00)">Slot 6 (10:30-11:00)</option>
+        <option value="Slot 7 (11:00-11:30)">Slot 7 (11:00-11:30)</option>
+        <option value="Slot 8 (11:30-12:00)">Slot 8 (11:30-12:00)</option>
+        <option value="Slot 9 (12:00-12:30)">Slot 9 (12:00-12:30)</option>
+        <option value="Slot 10 (12:30-01:00)">Slot 10 (12:30-01:00)</option>
+    </select>
 
-    <hr style="margin-top: 40px; border: 0; border-top: 1px solid #eee;">
+    <div id="statusMesej" class="alert"></div>
 
-    <h3>Rekod Tempahan Terkini</h3>
-    <div id="loadingStatus">Sedang mengambil rekod terkini...</div>
-    <div class="table-container">
-        <table id="jadualBooking">
+    <button id="btnHantar" onclick="hantarTempahan()">Hantar Tempahan</button>
+
+    <div class="record-section">
+        <h3 style="text-align:center">Semakan Jadual Terkini</h3>
+        <table id="jadualRekod">
             <thead>
                 <tr>
-                    <th>Guru</th>
                     <th>Tarikh</th>
-                    <th>Guna</th>
-                    <th>Hantar</th>
-                    <th>Lokasi</th>
-                    <th>Tujuan</th>
+                    <th>Slot</th>
+                    <th>Nama Guru</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -100,107 +73,79 @@
 </div>
 
 <script>
-    // URL API Google Apps Script anda
-    const urlAPI = "https://script.google.com/macros/s/AKfycbx1UztmMkvdZxB48wOGNI7hw4xzPYGNSmF-s9548-T7mV8H9k93Rm7BIS1rMYsGz2qLEQ/exec";
+    // URL API BARU ANDA
+    const urlAPI = "https://script.google.com/macros/s/AKfycbz3532OY41iClNbHAKg3rsiZofmEN5Qxf8JKltRSsfhGNNs_vOZBsEl922y_DWYSVtU3A/exec";
+    
+    let rekodData = [];
 
-    window.onload = paparRekod;
-
-    /**
-     * FUNGSI PENUKAR MASA: Menukar format 24 jam kepada 12 jam (AM/PM)
-     */
-    function formatKe12Jam(masa) {
-        if (!masa) return "-";
-        
-        // Menangani format jika ia adalah objek tarikh (ISO)
-        let masaStr = masa.toString();
-        
-        // Cuba dapatkan format HH:MM daripada string
-        let parts = masaStr.match(/(\d{1,2}):(\d{2})/);
-        if (parts) {
-            let jam = parseInt(parts[1]);
-            let minit = parts[2];
-            let ampm = jam >= 12 ? 'PM' : 'AM';
-            jam = jam % 12;
-            jam = jam ? jam : 12; // Jam '0' ditukar kepada '12'
-            return jam + ':' + minit + ' ' + ampm;
-        }
-        
-        return masaStr; // Pulangkan asal jika tidak padan format masa
-    }
-
-    /**
-     * FUNGSI PAPAR: Mengambil data dan memaparkannya dalam jadual
-     */
-    async function paparRekod() {
-        const tbody = document.querySelector("#jadualBooking tbody");
-        const status = document.getElementById('loadingStatus');
-
+    // Muat data semasa mula
+    async function muatData() {
         try {
             const res = await fetch(urlAPI);
-            const data = await res.json();
-            tbody.innerHTML = "";
-            
-            if (!data || data.length === 0) {
-                status.innerText = "Tiada rekod tempahan dijumpai.";
-            } else {
-                status.style.display = "none";
-                // Susun terbaru di atas
-                data.reverse().forEach(item => {
-                    const row = tbody.insertRow();
-                    row.innerHTML = `
-                        <td><b>${item.nama}</b></td>
-                        <td>${item.tarikh}</td>
-                        <td>${formatKe12Jam(item.mGuna)}</td>
-                        <td>${formatKe12Jam(item.mHantar)}</td>
-                        <td>${item.lokasi}</td>
-                        <td>${item.tujuan}</td>
-                    `;
-                });
-            }
-        } catch (e) {
-            status.innerText = "Gagal memuatkan rekod. Sila muat semula halaman.";
-            console.error(e);
+            rekodData = await res.json();
+            paparJadual();
+        } catch (e) { console.error("Gagal muat data."); }
+    }
+
+    function paparJadual() {
+        const tbody = document.querySelector("#jadualRekod tbody");
+        tbody.innerHTML = "";
+        rekodData.slice().reverse().forEach(r => {
+            const row = tbody.insertRow();
+            row.innerHTML = `<td>${r.tarikh}</td><td>${r.slot}</td><td>${r.nama}</td>`;
+        });
+    }
+
+    // FUNGSI SEKAT DOUBLE BOOKING
+    function semakPertindihan() {
+        const t = document.getElementById('tarikh').value;
+        const s = document.getElementById('slotMasa').value;
+        const msg = document.getElementById('statusMesej');
+        const btn = document.getElementById('btnHantar');
+
+        if (!t || !s) return;
+
+        // Semak jika Tarikh + Slot sudah ada dalam Sheets
+        const sudahAda = rekodData.some(r => r.tarikh === t && r.slot === s);
+
+        msg.style.display = "block";
+        if (sudahAda) {
+            msg.className = "alert alert-danger";
+            msg.innerText = "🚨 SLOT BERTINDIH! Sila pilih slot atau tarikh lain.";
+            btn.disabled = true;
+        } else {
+            msg.className = "alert alert-success";
+            msg.innerText = "✅ SLOT KOSONG. Anda boleh menempah.";
+            btn.disabled = false;
         }
     }
 
-    /**
-     * FUNGSI HANTAR: Menghantar data borang ke Sheets
-     */
-    async function tambahBooking() {
+    async function hantarTempahan() {
+        const nama = document.getElementById('namaGuru').value;
+        const tarikh = document.getElementById('tarikh').value;
+        const slot = document.getElementById('slotMasa').value;
         const btn = document.getElementById('btnHantar');
-        const payload = {
-            nama: document.getElementById('namaGuru').value,
-            tarikh: document.getElementById('tarikh').value,
-            mGuna: document.getElementById('masaGuna').value,
-            mHantar: document.getElementById('masaHantar').value,
-            lokasi: document.getElementById('lokasi').value,
-            tujuan: document.getElementById('tujuan').value
-        };
 
-        if (!payload.nama || !payload.tarikh || !payload.mGuna || !payload.mHantar) {
-            alert("Sila isi Nama, Tarikh dan Masa sebelum hantar!");
-            return;
-        }
+        if (!nama || !tarikh || !slot) return alert("Lengkapkan maklumat!");
 
         btn.disabled = true;
-        btn.innerText = "Sila tunggu...";
+        btn.innerText = "Memproses...";
 
         try {
             await fetch(urlAPI, {
                 method: 'POST',
                 mode: 'no-cors',
-                body: JSON.stringify(payload)
+                body: JSON.stringify({ nama, tarikh, slot })
             });
-
-            alert("Tempahan Berjaya Disimpan!");
-            location.reload(); 
+            alert("Tempahan Berjaya!");
+            location.reload();
         } catch (e) {
-            alert("Ralat sambungan berlaku. Sila cuba lagi.");
+            alert("Ralat. Cuba lagi.");
             btn.disabled = false;
-            btn.innerText = "Hantar Tempahan";
         }
     }
-</script>
 
+    window.onload = muatData;
+</script>
 </body>
 </html>
